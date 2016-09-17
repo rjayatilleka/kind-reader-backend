@@ -1,0 +1,19 @@
+{
+  "name": "kind-reader-backend",
+  "version": "1.0.0",
+  "description": "Download web page, extract content, and convert to markdown",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rjayatilleka/kind-reader-backend.git"
+  },
+  "author": "Ramith Jayatilleka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rjayatilleka/kind-reader-backend/issues"
+  },
+  "homepage": "https://github.com/rjayatilleka/kind-reader-backend#readme"
+}
