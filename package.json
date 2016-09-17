@@ -2,7 +2,6 @@
   "name": "kind-reader-backend",
   "version": "1.0.0",
   "description": "Download web page, extract content, and convert to markdown",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +14,13 @@
   "bugs": {
     "url": "https://github.com/rjayatilleka/kind-reader-backend/issues"
   },
-  "homepage": "https://github.com/rjayatilleka/kind-reader-backend#readme"
+  "homepage": "https://github.com/rjayatilleka/kind-reader-backend#readme",
+  "preferGlobal": true,
+  "bin": {
+    "kind-reader": "index.js"
+  },
+  "dependencies": {
+    "node-readability": "^2.2.0",
+    "to-markdown": "^3.0.1"
+  }
 }
