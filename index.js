@@ -26,6 +26,8 @@ read(process.argv[2], (err, article, meta) => {
 			} else if ($e.text().search(/prev/i) >= 0) {
 				prevUrl = $e.attr('href');
 				$e.remove();
+			} else {
+				$e.replaceWith($e.text());
 			}
 		});
 
@@ -36,15 +38,20 @@ read(process.argv[2], (err, article, meta) => {
 		const niceifyCmd = 'pandoc --from=markdown --to=html | pandoc --from=html --to=markdown';
 		const cleanFrontEndCmd = 'sed -E -e $\'1,/[[:alnum:]]/ {\\n  /^[^[:alnum:]]*$/d\\n}\'';
 		const flipCmd = 'tail -r';
+		const cleanCmd = 'sed -E -e \'s/\\\\(.)/\\1/g\''
 
 		const cmd = niceifyCmd +
 			' | ' + cleanFrontEndCmd +
 			' | ' + flipCmd +
 			' | ' + cleanFrontEndCmd +
-			' | ' + flipCmd;
+			' | ' + flipCmd +
+			' | ' + cleanCmd;
 
 		const formatProcess = exec(cmd,
 				(err, stdout, stderr) => {
+					console.log(title);
+					console.log('Next:', nextUrl);
+					console.log('Prev:', prevUrl, '\n\n');
 					console.log(stdout);
 				});
 		formatProcess.stdin.write(rawMd);
