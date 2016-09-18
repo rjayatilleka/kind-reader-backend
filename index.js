@@ -1,26 +1,55 @@
 #!/usr/bin/env node
 
+const exec = require('child_process').exec;
+
 const read = require('node-readability');
-const toMarkdown = require('to-markdown');
-const striptags = require('striptags');
 const cheerio = require('cheerio');
 
+const toMarkdown = require('to-markdown');
+const striptags = require('striptags');
+
 read(process.argv[2], (err, article, meta) => {
-	if (err) throw err;
+	try {
+		if (err) throw err;
 
-  console.log('Title:', article.title);
-	const $ = cheerio.load(article.content);
-	
-	// For each link, add to URL->text map.
-	// Then replace with the text
-	const urlsToText = new Map();
+		const title = article.title;
+		let nextUrl, prevUrl;
 
-	$('a').each((i, e) => {
-		urlsToText.set($(e).attr('href'), $(e).text());
-		$(e).replaceWith($(e).text());
-	});
+		const $ = cheerio.load(article.content);
 
-  console.log(striptags(toMarkdown($.html())));
+		$('a').each((i, element) => {
+			const $e = $(element);
 
-  article.close();
+			if ($e.text().search(/next/i) >= 0) {
+				nextUrl = $e.attr('href');
+				$e.remove();
+			} else if ($e.text().search(/prev/i) >= 0) {
+				prevUrl = $e.attr('href');
+				$e.remove();
+			}
+		});
+
+		// sed -E -e $'1,/[[:alnum:]]/ {\n  /^[^[:alnum:]]*$/d\n}'
+
+		const rawMd = striptags(toMarkdown($.html()));
+
+		const niceifyCmd = 'pandoc --from=markdown --to=html | pandoc --from=html --to=markdown';
+		const cleanFrontEndCmd = 'sed -E -e $\'1,/[[:alnum:]]/ {\\n  /^[^[:alnum:]]*$/d\\n}\'';
+		const flipCmd = 'tail -r';
+
+		const cmd = niceifyCmd +
+			' | ' + cleanFrontEndCmd +
+			' | ' + flipCmd +
+			' | ' + cleanFrontEndCmd +
+			' | ' + flipCmd;
+
+		const formatProcess = exec(cmd,
+				(err, stdout, stderr) => {
+					console.log(stdout);
+				});
+		formatProcess.stdin.write(rawMd);
+		formatProcess.stdin.end();
+	} finally {
+		if (article) article.close();
+	}
 });
