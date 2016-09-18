@@ -20,6 +20,7 @@
     "kind-reader": "index.js"
   },
   "dependencies": {
+    "cheerio": "^0.22.0",
     "node-readability": "^2.2.0",
     "striptags": "^2.1.1",
     "to-markdown": "^3.0.1"
